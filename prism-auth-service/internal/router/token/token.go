@@ -2,36 +2,28 @@ package token
 
 import (
 	"fmt"
+	"prism-auth-service/pkg/webToken"
 
 	"github.com/dgrijalva/jwt-go/v4"
 	"github.com/gofiber/fiber/v2"
 )
 
-type Claims struct {
-	jwt.StandardClaims
-
-	Username string `json:"username"`
-}
-
 func ValidateToken(c *fiber.Ctx) error {
 	tokenData := c.FormValue("t")
 
-	jwtToken, err := jwt.ParseWithClaims(tokenData, &Claims{}, func(t *jwt.Token) (interface{}, error) {
+	jwtToken, err := jwt.ParseWithClaims(tokenData, &webToken.Claims{}, func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
 		}
 
-		return nil, nil
+		return nil, fmt.Errorf("invalid token data")
 	})
 
 	if err != nil {
-		return c.JSON(fiber.Map{
-			"Status": "failed",
-			"msg":    "Unexpected signing method",
-		})
+		return c.SendStatus(fiber.StatusUnauthorized)
 	}
 
-	if claims, ok := jwtToken.Claims.(*Claims); ok && jwtToken.Valid {
+	if claims, ok := jwtToken.Claims.(*webToken.Claims); ok && jwtToken.Valid {
 		return c.JSON(fiber.Map{
 			"Status": "success",
 			"msg":    "Token valid",
@@ -39,10 +31,7 @@ func ValidateToken(c *fiber.Ctx) error {
 		})
 	}
 
-	return c.JSON(fiber.Map{
-		"Status": "failed",
-		"msg":    "Failed to validate token",
-	})
+	return c.SendStatus(fiber.StatusUnauthorized)
 }
 
 func RefreshToken(c *fiber.Ctx) error {
