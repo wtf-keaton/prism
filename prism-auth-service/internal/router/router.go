@@ -16,7 +16,7 @@ func Serve() (app *fiber.App) {
 	api.Post("/sign_up", register.SignUp)
 
 	api.Post("/validate", token.ValidateToken)
-	api.Post("/refresh", token.Refresh)
+	api.Post("/refresh", token.RefreshToken)
 
 	return
 }

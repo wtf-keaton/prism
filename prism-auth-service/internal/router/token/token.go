@@ -6,6 +6,6 @@ func ValidateToken(c *fiber.Ctx) error {
 	return c.SendString("test")
 }
 
-func Refresh(c *fiber.Ctx) error {
+func RefreshToken(c *fiber.Ctx) error {
 	return c.SendString("test2")
 }
