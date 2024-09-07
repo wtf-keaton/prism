@@ -23,3 +23,7 @@ func Connect() error {
 	}
 	return err
 }
+
+func Get() *pgx.Conn {
+	return conn
+}
