@@ -3,6 +3,7 @@ package webToken
 import (
 	"errors"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/dgrijalva/jwt-go/v4"
@@ -14,37 +15,35 @@ type Claims struct {
 	Username string `json:"username"`
 }
 
-func Generate(username string) string {
-	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, Claims{
+var secretKey = []byte(os.Getenv("JWT_SECRET_KEY"))
+
+func Generate(username string) (string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, Claims{
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: jwt.At(time.Now().Add(3600)),
+			ExpiresAt: jwt.At(time.Now().Add(time.Hour)),
 			IssuedAt:  jwt.At(time.Now()),
 		},
 		Username: username,
 	})
 
-	generated, _ := jwtToken.SignedString([]byte("pipapupabubu"))
-
-	return generated
+	return token.SignedString(secretKey)
 }
 
 func ValidateToken(jwtData string) (string, error) {
-	jwtToken, err := jwt.ParseWithClaims(jwtData, &Claims{}, func(t *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(jwtData, &Claims{}, func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
 		}
-
-		return nil, fmt.Errorf("invalid token data")
+		return secretKey, nil
 	})
 
 	if err != nil {
-		return "", errors.New(err.Error())
+		return "", fmt.Errorf("failed to parse token: %v", err)
 	}
 
-	if claims, ok := jwtToken.Claims.(*Claims); ok && jwtToken.Valid {
+	if claims, ok := token.Claims.(*Claims); ok && token.Valid {
 		return claims.Username, nil
 	}
 
-	return "", errors.New("failed to verify token")
-
+	return "", errors.New("invalid token")
 }

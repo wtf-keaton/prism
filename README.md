@@ -24,7 +24,6 @@ Prism is a modern HR platform designed to streamline the recruitment process, pr
 ## 🛠️ Technology Stack
 
 - Backend: Go (Golang) 🐹
-- Frontend: Go (Golang) with Fiber framework 🚀
 - UI Framework: Bootstrap 🎨
 - Database: PostgreSQL 🐘
 - Message Broker: Kafka 📬
@@ -38,10 +37,9 @@ Prism is built on a microservices architecture, consisting of the following serv
 1. 🔐 Auth Service
 2. 👤 User Service
 3. 💼 Vacancy Service
-4. 📮 Application Service
+4. 📮 Api Gateway
 5. 🔔 Notification Service
-6. 📊 Analytics Service
-7. 🖥️ Frontend Service (Go with Fiber)
+6. 🖥️ Frontend Service
 
 ## 🚀 Getting Started
 
