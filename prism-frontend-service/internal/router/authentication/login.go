@@ -24,15 +24,15 @@ func LogIn(c *fiber.Ctx) error {
 	email, password := c.FormValue("e"), c.FormValue("p")
 
 	requestBody, err := json.Marshal(map[string]string{
-		"e": email,
-		"p": password,
+		"email":    email,
+		"password": password,
 	})
 
 	if err != nil {
 		return c.Redirect("/sign_in?err=Failed to get data from client")
 	}
 
-	resp, err := http.Post("http://localhost:8080/api/sign_in", "application/x-www-form-urlencoded", bytes.NewBuffer(requestBody))
+	resp, err := http.Post("http://localhost:8080/api/v1/sign_in", "application/json", bytes.NewBuffer(requestBody))
 	if err != nil {
 		return c.Redirect("/sign_in?err=Failed to get data from server")
 	}
