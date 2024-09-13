@@ -34,7 +34,7 @@ func SignUp(login, password string) error {
 	}()
 
 	var exists bool
-	err = tx.QueryRow(context.Background(), "select exists(select 1 from users where email=$1)", login).Scan(&exists)
+	err = tx.QueryRow(context.Background(), "SELECT EXISTS(SELECT 1 FROM users WHERE email=$1)", login).Scan(&exists)
 
 	if err != nil {
 		return fmt.Errorf("failed to check user existence: %v", err)
@@ -50,7 +50,7 @@ func SignUp(login, password string) error {
 	}
 
 	_, err = tx.Exec(context.Background(),
-		"insert into users(email, password_hash, role, created_at) values($1, $2, $3, $4)",
+		"INSERT INTO users(email, password_hash, role, created_at) VALUES($1, $2, $3, $4)",
 		login, passwordHashed, Default, time.Now())
 
 	if err != nil {
