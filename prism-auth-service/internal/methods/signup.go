@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"prism-auth-service/internal/database"
+	"prism-auth-service/internal/postgres"
 	"prism-auth-service/pkg/email"
 	"prism-auth-service/pkg/passwordHash"
 	"time"
@@ -22,7 +22,7 @@ func SignUp(login, password string) error {
 		return errors.New("login is not email")
 	}
 
-	tx, err := database.Get().Begin(context.Background())
+	tx, err := postgres.Get().Begin(context.Background())
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %v", err)
 	}
@@ -41,7 +41,7 @@ func SignUp(login, password string) error {
 	}
 
 	if exists {
-		return errors.New("user exists")
+		return postgres.ErrUserExists
 	}
 
 	passwordHashed, err := passwordHash.New(password)

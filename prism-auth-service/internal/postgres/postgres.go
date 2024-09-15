@@ -1,4 +1,4 @@
-package database
+package postgres
 
 import (
 	"context"
@@ -14,6 +14,11 @@ import (
 var (
 	conn    *pgx.Conn
 	timeout = 5 * time.Second
+)
+
+var (
+	ErrUserExists   = errors.New("user already exists")
+	ErrUserNotFound = errors.New("user not found")
 )
 
 func Connect() error {
@@ -58,6 +63,7 @@ func Close() error {
 		if err != nil {
 			return fmt.Errorf("failed to close database connection: %v", err)
 		}
+
 		log.Println("Database connection closed successfully")
 		conn = nil
 	}
